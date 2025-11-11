@@ -23,7 +23,7 @@ namespace NoahGrasshopper
         /// </summary>
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
-            pManager.AddNumberParameter("IN_ExampleThickness", "IL", "Example thickness in m", GH_ParamAccess.item, 0.02);
+            pManager.AddNumberParameter("IN_ExampleThickness", "IL", "Example thickness in m", GH_ParamAccess.item, 5);
         }
 
         /// <summary>
@@ -70,4 +70,5 @@ namespace NoahGrasshopper
             get { return new Guid("47B2AF10-DD4D-4DD5-84B9-5A0C18335D94"); }
         }
     }
+
 }

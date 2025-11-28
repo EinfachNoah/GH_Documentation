@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Eto.Drawing;
 using Grasshopper.Kernel;
@@ -58,7 +58,6 @@ namespace NoahGrasshopper
             StahlbetonwandData layerThicknesses_UWR = null;
             StahlbetonwandData layerThicknesses_OWL = null;
             StahlbetonwandData layerThicknesses_UWL = null;
-            double length = 0.5;
 
             DA.GetData("IN_B_LayerThicknesses", ref layerThicknesses_BR);
             DA.GetData("IN_B_LayerThicknesses", ref layerThicknesses_BL);
@@ -67,15 +66,11 @@ namespace NoahGrasshopper
             DA.GetData("IN_OWL_LayerThicknesses", ref layerThicknesses_OWL);
             DA.GetData("IN_UWL_LayerThicknesses", ref layerThicknesses_UWL);
 
-            double maxYR = length;
 
             double x_offset_OWR = 0;
             double x_offset_UWR = 0;
             double cut_offset_UWR = 0;
             double cut_offset_OWR = 0;
-
-            double minXL = 0;
-            double maxXL = length;
 
             double x_offset_OWL = 0;
             double x_offset_UWL = 0;
@@ -83,6 +78,10 @@ namespace NoahGrasshopper
             double x_cutR = 0;
             double x_cutUWR = layerThicknesses_UWR.Stahlbeton + layerThicknesses_UWR.Daemmung + layerThicknesses_UWR.Aussenputz;
             double x_cutOWR = layerThicknesses_OWR.Stahlbeton + layerThicknesses_OWR.Daemmung + layerThicknesses_OWR.Aussenputz;
+            double length = x_cutUWR + 0.05;
+            double maxYR = length;
+            double minXL = 0;
+            double maxXL = maxYR;
 
             if (x_cutOWR <= x_cutUWR)
             {
@@ -140,29 +139,6 @@ namespace NoahGrasshopper
             Box cube_OWR_3 = new Box(Plane.WorldXY, new Interval(x_offset_OWR, x_offset_OWR + layerThicknesses_OWR.Stahlbeton), new Interval(cut_offset_OWR + layerThicknesses_OWL.Stahlbeton, maxYR), new Interval(layerThicknesses_BR.Stahlbeton, z_cutR));
             data.AddGeometry("Stahlbeton Wand", cube_OWR_3, ColorData.Colors["Stahlbeton Wand"]);
 
-            double x_offset_UBR = x_offset_UWR;
-
-            Box cube_UBR_1 = new Box(Plane.WorldXY, new Interval(x_cutUWR, x_cutR + 0.05), new Interval(x_cutL + 0.05, maxYR), new Interval(-layerThicknesses_BR.Innenspachtel, 0));
-            data.AddGeometry("Innenspachtel Decke", cube_UBR_1, ColorData.Colors["Innenspachtel Decke"]);
-
-            double x_offset_OBR = x_offset_OWR;
-
-            double z_offset_OBR = 0;
-
-            Box cube_OBR_1 = new Box(Plane.WorldXY, new Interval(x_offset_OBR, x_cutR + 0.05), new Interval(x_cutL + 0.05, maxYR), new Interval(z_offset_OBR, z_offset_OBR + layerThicknesses_BR.Stahlbeton));
-            data.AddGeometry("Stahlbeton Decke", cube_OBR_1, ColorData.Colors["Stahlbeton Decke"]);
-            z_offset_OBR += layerThicknesses_BR.Stahlbeton;
-
-            Box cube_OBR_2 = new Box(Plane.WorldXY, new Interval(x_offset_OBR + layerThicknesses_OWR.Stahlbeton, x_cutR + 0.05), new Interval(x_cutL + 0.05, maxYR), new Interval(z_offset_OBR, z_offset_OBR + layerThicknesses_BR.Splittschuettung));
-            data.AddGeometry("Splittschüttung Decke", cube_OBR_2, ColorData.Colors["Splittschüttung Decke"]);
-            z_offset_OBR += layerThicknesses_BR.Splittschuettung;
-
-            Box cube_OBR_3 = new Box(Plane.WorldXY, new Interval(x_offset_OBR + layerThicknesses_OWR.Stahlbeton, x_cutR + 0.05), new Interval(x_cutL + 0.05, maxYR), new Interval(z_offset_OBR, z_offset_OBR + layerThicknesses_BR.Trittschalldaemmung));
-            data.AddGeometry("Trittschalldämmung Decke", cube_OBR_3, ColorData.Colors["Trittschalldämmung Decke"]);
-            z_offset_OBR += layerThicknesses_BR.Trittschalldaemmung;
-
-            Box cube_OBR_4 = new Box(Plane.WorldXY, new Interval(x_offset_OBR + layerThicknesses_OWR.Stahlbeton, x_cutR + 0.05), new Interval(x_cutL + 0.05, maxYR), new Interval(z_offset_OBR, z_offset_OBR + layerThicknesses_BR.Estrich));
-            data.AddGeometry("Estrich Decke", cube_OBR_4, ColorData.Colors["Estrich Decke"]);
 
             //// LEFT EDGE  
             ///
@@ -197,7 +173,7 @@ namespace NoahGrasshopper
 
             double x_offset_UBL = x_offset_UWL + layerThicknesses_UWL.Stahlbeton;
 
-            Box cube_UBL_1 = new Box(Plane.WorldXY, new Interval(x_cutUWR, maxXL), new Interval(x_offset_UBL, x_cutL + 0.05), new Interval(-layerThicknesses_BL.Innenspachtel, 0));
+            Box cube_UBL_1 = new Box(Plane.WorldXY, new Interval(x_cutUWR, maxXL), new Interval(x_offset_UBL, maxYR), new Interval(-layerThicknesses_BL.Innenspachtel, 0));
             data.AddGeometry("Innenspachtel Decke", cube_UBL_1, ColorData.Colors["Innenspachtel Decke"]);
 
 
@@ -205,19 +181,19 @@ namespace NoahGrasshopper
 
             double z_offset_OBL = 0;
 
-            Box cube_OBL_1 = new Box(Plane.WorldXY, new Interval(x_cutOWR - layerThicknesses_OWR.Stahlbeton, maxXL), new Interval(x_offset_OBL, x_cutL + 0.05), new Interval(z_offset_OBL, z_offset_OBL + layerThicknesses_BL.Stahlbeton));
+            Box cube_OBL_1 = new Box(Plane.WorldXY, new Interval(x_cutOWR - layerThicknesses_OWR.Stahlbeton, maxXL), new Interval(x_offset_OBL, maxYR), new Interval(z_offset_OBL, z_offset_OBL + layerThicknesses_BL.Stahlbeton));
             data.AddGeometry("Stahlbeton Decke", cube_OBL_1, ColorData.Colors["Stahlbeton Decke"]);
             z_offset_OBL += layerThicknesses_BL.Stahlbeton;
 
-            Box cube_OBL_2 = new Box(Plane.WorldXY, new Interval(x_cutOWR, maxXL), new Interval(x_offset_OBL + layerThicknesses_OWL.Stahlbeton, x_cutL + 0.05),new Interval(z_offset_OBL, z_offset_OBL + layerThicknesses_BL.Splittschuettung));
+            Box cube_OBL_2 = new Box(Plane.WorldXY, new Interval(x_cutOWR, maxXL), new Interval(x_offset_OBL + layerThicknesses_OWL.Stahlbeton, maxYR),new Interval(z_offset_OBL, z_offset_OBL + layerThicknesses_BL.Splittschuettung));
             data.AddGeometry("Splittschüttung Decke", cube_OBL_2, ColorData.Colors["Splittschüttung Decke"]);
             z_offset_OBL += layerThicknesses_BL.Splittschuettung;
 
-            Box cube_OBL_3 = new Box(Plane.WorldXY, new Interval(x_cutOWR, maxXL), new Interval(x_offset_OBL + layerThicknesses_OWL.Stahlbeton, x_cutL + 0.05), new Interval(z_offset_OBL, z_offset_OBL + layerThicknesses_BL.Trittschalldaemmung));
+            Box cube_OBL_3 = new Box(Plane.WorldXY, new Interval(x_cutOWR, maxXL), new Interval(x_offset_OBL + layerThicknesses_OWL.Stahlbeton, maxYR), new Interval(z_offset_OBL, z_offset_OBL + layerThicknesses_BL.Trittschalldaemmung));
             data.AddGeometry("Trittschalldämmung Decke", cube_OBL_3, ColorData.Colors["Trittschalldämmung Decke"]);
             z_offset_OBL += layerThicknesses_BL.Trittschalldaemmung;
 
-            Box cube_OBL_4 = new Box(Plane.WorldXY, new Interval(x_cutOWR, maxXL), new Interval(x_offset_OBL + layerThicknesses_OWL.Stahlbeton, x_cutL + 0.05),new Interval(z_offset_OBL, z_offset_OBL + layerThicknesses_BL.Estrich));
+            Box cube_OBL_4 = new Box(Plane.WorldXY, new Interval(x_cutOWR, maxXL), new Interval(x_offset_OBL + layerThicknesses_OWL.Stahlbeton, maxYR),new Interval(z_offset_OBL, z_offset_OBL + layerThicknesses_BL.Estrich));
             data.AddGeometry("Estrich Decke", cube_OBL_4, ColorData.Colors["Estrich Decke"]);
 
 
